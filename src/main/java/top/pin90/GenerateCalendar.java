@@ -2,7 +2,12 @@ package top.pin90;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -19,16 +24,18 @@ public class GenerateCalendar {
         this.holidayConfig = holidayConfig;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int year = 2022;
         HolidayConfig holidayConfig = new HolidayConfig();
         GenerateCalendar generateCalendar = new GenerateCalendar(year, 2, holidayConfig);
 
-        System.out.println(generateCalendar.generate());
+        String json = generateCalendar.generate();
+        System.out.println(json);
+        Files.write(Paths.get("data/" + year + "-two-rest.json"), json.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generate() {
-        return generateJSONObject().toString();
+        return generateJSONObject().toString(SerializerFeature.PrettyFormat);
     }
 
     public JSONObject generateJSONObject() {
