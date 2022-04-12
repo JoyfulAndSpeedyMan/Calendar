@@ -10,13 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GenerateCalendar {
     private int year;
     private int restMode;
+    private String desc;
     private HolidayConfig holidayConfig;
+    private JSONObject node;
 
     public GenerateCalendar(int year, int restMode, HolidayConfig holidayConfig) {
         this.year = year;
@@ -28,6 +29,7 @@ public class GenerateCalendar {
         int year = 2022;
         HolidayConfig holidayConfig = new HolidayConfig();
         GenerateCalendar generateCalendar = new GenerateCalendar(year, 2, holidayConfig);
+        generateCalendar.setDesc("2022年日历数据");
 
         String json = generateCalendar.generate();
         System.out.println(json);
@@ -39,32 +41,41 @@ public class GenerateCalendar {
     }
 
     public JSONObject generateJSONObject() {
-        JSONObject node = new JSONObject();
 
-        initNode(node);
+        initNode();
 
-        normalDay(year, node);
+        commonProperty();
 
-        handBusyAndRestDay(year, node);
+        normalDay();
+
+        handBusyAndRestDay();
 
         return node;
     }
 
-    public void initNode(JSONObject node) {
+    public void initNode() {
+        JSONObject node = new JSONObject();
+
         JSONObject index = new JSONObject();
         JSONArray dates = new JSONArray(366);
         JSONObject property = new JSONObject();
         node.put("index", index);
         node.put("dates", dates);
         node.put("property", property);
+
+        this.node = node;
     }
 
-    public void normalDay(int year, JSONObject node) {
+    public void commonProperty(){
         JSONObject property = node.getJSONObject("property");
+        property.put("year", year);
+        property.put("desc", desc);
+    }
+
+    public void normalDay() {
         JSONObject index = node.getJSONObject("index");
         JSONArray dates = node.getJSONArray("dates");
 
-        property.put("year", year);
 
         int i = 0;
         for (int month = 1; month <= 12; month++) {
@@ -92,7 +103,7 @@ public class GenerateCalendar {
         }
     }
 
-    public void handBusyAndRestDay(int year, JSONObject node) {
+    public void handBusyAndRestDay() {
         JSONObject index = node.getJSONObject("index");
         JSONArray dates = node.getJSONArray("dates");
 
@@ -121,12 +132,6 @@ public class GenerateCalendar {
         }
     }
 
-    public LocalDate parseDate(int year, String date) {
-        String month = date.substring(0, 2);
-        String day = date.substring(2);
-        return LocalDate.of(year, Integer.parseInt(month), Integer.parseInt(day));
-    }
-
     public String indexKey(int month, int day) {
         return String.format("%02d", month) + String.format("%02d", day);
     }
@@ -137,5 +142,13 @@ public class GenerateCalendar {
 
     public void setHolidayConfig(HolidayConfig holidayConfig) {
         this.holidayConfig = holidayConfig;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 }
