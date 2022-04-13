@@ -41,7 +41,7 @@ public class GenerateCalendar {
         System.out.println(json);
 
         String fileNameFormat = "%s-%s-rest.json";
-        String versionFileNameFormat = "%s-%s-version.json";
+        String versionFileNameFormat = "%s-%s-version";
         Files.write(Paths.get("data/" + String.format(fileNameFormat, year, restMode)), json.getBytes(StandardCharsets.UTF_8));
         Files.write(Paths.get("data/" + String.format(versionFileNameFormat, year, restMode)), (version + "").getBytes(StandardCharsets.UTF_8));
 
