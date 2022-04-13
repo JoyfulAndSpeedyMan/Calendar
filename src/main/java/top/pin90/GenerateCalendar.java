@@ -15,25 +15,36 @@ import java.util.List;
 public class GenerateCalendar {
     private int year;
     private int restMode;
+    private int version;
     private String desc;
     private HolidayConfig holidayConfig;
     private JSONObject node;
 
-    public GenerateCalendar(int year, int restMode, HolidayConfig holidayConfig) {
+    public GenerateCalendar(int year, int restMode, int version, String desc, HolidayConfig holidayConfig) {
         this.year = year;
         this.restMode = restMode;
         this.holidayConfig = holidayConfig;
+        this.version = version;
+        this.desc = desc;
     }
 
     public static void main(String[] args) throws IOException {
         int year = 2022;
+        int restMode = 2;
+        int version = 1;
+        String desc = "2022年日历数据";
+
         HolidayConfig holidayConfig = new HolidayConfig();
-        GenerateCalendar generateCalendar = new GenerateCalendar(year, 2, holidayConfig);
-        generateCalendar.setDesc("2022年日历数据");
+        GenerateCalendar generateCalendar = new GenerateCalendar(year, restMode, version, desc, holidayConfig);
 
         String json = generateCalendar.generate();
         System.out.println(json);
-        Files.write(Paths.get("data/" + year + "-two-rest.json"), json.getBytes(StandardCharsets.UTF_8));
+
+        String fileNameFormat = "%s-%s-rest.json";
+        String versionFileNameFormat = "%s-%s-version.json";
+        Files.write(Paths.get("data/" + String.format(fileNameFormat, year, restMode)), json.getBytes(StandardCharsets.UTF_8));
+        Files.write(Paths.get("data/" + String.format(versionFileNameFormat, year, restMode)), (version + "").getBytes(StandardCharsets.UTF_8));
+
     }
 
     public String generate() {
@@ -66,8 +77,9 @@ public class GenerateCalendar {
         this.node = node;
     }
 
-    public void commonProperty(){
+    public void commonProperty() {
         JSONObject property = node.getJSONObject("property");
+        property.put("version", version);
         property.put("year", year);
         property.put("desc", desc);
     }
