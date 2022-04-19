@@ -31,7 +31,7 @@ public class GenerateCalendar {
     public static void main(String[] args) throws IOException {
         int year = 2022;
         int restMode = 2;
-        int version = 1;
+        int version = 2;
         String desc = "2022年日历数据";
 
         HolidayConfig holidayConfig = new HolidayConfig();
